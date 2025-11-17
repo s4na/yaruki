@@ -1,16 +1,24 @@
 let decisionTree = {};
 let currentQuestion = 'q1';
+let answerHistory = []; // 回答履歴を保存
 
 // DOM要素の取得
 const questionContainer = document.getElementById('question-container');
 const resultContainer = document.getElementById('result-container');
+const journeyContainer = document.getElementById('journey-container');
 const questionText = document.getElementById('question-text');
 const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
-const restartBtn = document.getElementById('restart-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const actionContent = document.getElementById('action-content');
+const journeyContent = document.getElementById('journey-content');
+
+// ボタン要素の取得
+const restartBtn = document.getElementById('restart-btn');
+const viewJourneyBtn = document.getElementById('view-journey-btn');
+const backToResultBtn = document.getElementById('back-to-result-btn');
+const restartFromJourneyBtn = document.getElementById('restart-from-journey-btn');
 
 // 決定木JSONを読み込む
 async function loadDecisionTree() {
@@ -57,6 +65,12 @@ function showQuestion(questionId) {
 function handleAnswer(answer, node) {
     const nextId = answer === 'yes' ? node.yes : node.no;
 
+    // 回答履歴に追加
+    answerHistory.push({
+        question: node.text,
+        answer: answer
+    });
+
     if (nextId) {
         showQuestion(nextId);
     }
@@ -66,6 +80,7 @@ function handleAnswer(answer, node) {
 function showAction(node) {
     questionContainer.classList.add('hidden');
     resultContainer.classList.remove('hidden');
+    journeyContainer.classList.add('hidden');
 
     const resultTitle = document.getElementById('result-title');
     resultTitle.textContent = node.title;
@@ -73,6 +88,45 @@ function showAction(node) {
 
     // スクロール位置を上に
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 回答経路ページを表示
+function showJourneyPage() {
+    resultContainer.classList.add('hidden');
+    journeyContainer.classList.remove('hidden');
+    displayJourney();
+
+    // スクロール位置を上に
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 結果ページに戻る
+function backToResult() {
+    journeyContainer.classList.add('hidden');
+    resultContainer.classList.remove('hidden');
+
+    // スクロール位置を上に
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 回答履歴を表示
+function displayJourney() {
+    let journeyHTML = '<div class="journey-list">';
+
+    answerHistory.forEach((item, index) => {
+        const answerLabel = item.answer === 'yes' ? 'Yes' : 'No';
+        const answerClass = item.answer === 'yes' ? 'answer-yes' : 'answer-no';
+        journeyHTML += `
+            <div class="journey-item">
+                <div class="journey-step">${index + 1}</div>
+                <div class="journey-question">${item.question}</div>
+                <div class="journey-answer ${answerClass}">${answerLabel}</div>
+            </div>
+        `;
+    });
+
+    journeyHTML += '</div>';
+    journeyContent.innerHTML = journeyHTML;
 }
 
 // プログレスバーの更新
@@ -84,12 +138,19 @@ function updateProgress(step) {
     progressText.textContent = `質問 ${step}/${totalSteps}`;
 }
 
-// 最初から始める
-restartBtn.addEventListener('click', () => {
+// ボタンのイベントリスナー
+restartBtn.addEventListener('click', resetQuionnaire);
+restartFromJourneyBtn.addEventListener('click', resetQuionnaire);
+viewJourneyBtn.addEventListener('click', showJourneyPage);
+backToResultBtn.addEventListener('click', backToResult);
+
+// クイズをリセット
+function resetQuionnaire() {
+    answerHistory = [];
     currentQuestion = 'q1';
     showQuestion('q1');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+}
 
 // 初期化
 loadDecisionTree();

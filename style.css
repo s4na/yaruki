@@ -272,6 +272,142 @@ main {
     line-height: 1.6;
 }
 
+.result-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Journey Page */
+.journey-section-page {
+    animation: slideUp 0.5s ease;
+}
+
+.journey-section-page.hidden {
+    display: none;
+}
+
+.journey-box {
+    text-align: center;
+}
+
+.journey-header {
+    margin-bottom: 40px;
+}
+
+.journey-header h2 {
+    font-size: 28px;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.journey-subtitle {
+    font-size: 15px;
+    color: var(--color-text-light);
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.journey-content-wrapper {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.journey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.journey-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #f9fafb 100%);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    transition: all 0.2s ease;
+}
+
+.journey-item:hover {
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+    border-color: var(--color-primary);
+}
+
+.journey-step {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.journey-question {
+    flex: 1;
+    color: var(--color-text);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.journey-answer {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.answer-yes {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--color-yes-dark);
+}
+
+.answer-no {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--color-no-dark);
+}
+
+.journey-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid var(--color-border);
+}
+
+.btn-view-journey {
+    background-color: var(--color-primary);
+    color: white;
+    width: 100%;
+}
+
+.btn-view-journey:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.btn-back {
+    background-color: var(--color-text-light);
+    color: white;
+    width: 100%;
+}
+
+.btn-back:hover {
+    background-color: #4b5563;
+}
+
 /* Footer */
 footer {
     background-color: var(--color-bg);
@@ -388,5 +524,53 @@ footer {
 
     .encouragement {
         font-size: 14px;
+    }
+
+    .result-actions {
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .journey-header {
+        margin-bottom: 30px;
+    }
+
+    .journey-header h2 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .journey-subtitle {
+        font-size: 14px;
+    }
+
+    .journey-content-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .journey-item {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .journey-step {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .journey-question {
+        font-size: 14px;
+    }
+
+    .journey-answer {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+
+    .journey-actions {
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
     }
 }
