@@ -10,31 +10,49 @@
     <div class="container">
         <header>
             <h1>🧭 行動ナビゲーション</h1>
-            <p>Yes/No だけで、次に取るべき一手が見える</p>
+            <p class="tagline">Yes/No だけで「次の一歩」が見える</p>
+            <p class="subtitle">あなたの行動をブロックしている理由を一緒に見つけましょう</p>
         </header>
 
         <main id="app">
             <div id="question-container" class="question-section">
-                <div class="progress-bar">
-                    <div id="progress-fill" class="progress-fill"></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <p id="progress-text" class="progress-text">質問 <span id="current-step">1</span>/7</p>
                 </div>
-                <p id="progress-text" class="progress-text">質問 1/8</p>
 
                 <div class="question-box">
+                    <div class="question-counter">質問に答えて、次の一歩を見つける</div>
                     <h2 id="question-text"></h2>
 
                     <div class="button-group">
-                        <button id="yes-btn" class="btn btn-yes">Yes</button>
-                        <button id="no-btn" class="btn btn-no">No</button>
+                        <button id="yes-btn" class="btn btn-yes">
+                            <span class="btn-label">Yes</span>
+                            <span class="btn-sublabel">そう思う</span>
+                        </button>
+                        <button id="no-btn" class="btn btn-no">
+                            <span class="btn-label">No</span>
+                            <span class="btn-sublabel">そうでもない</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div id="result-container" class="result-section hidden">
                 <div class="result-box">
-                    <h2>💡 あなたの次の一歩</h2>
-                    <div id="action-content" class="action-content"></div>
-                    <button id="restart-btn" class="btn btn-restart">最初から始める</button>
+                    <div class="result-icon">💡</div>
+                    <h2 id="result-title">あなたの次の一歩</h2>
+
+                    <div class="action-section">
+                        <div id="action-content" class="action-content"></div>
+                    </div>
+
+                    <div class="cta-section">
+                        <p class="encouragement">このアドバイスを実行して、小さく始めてみませんか？</p>
+                        <button id="restart-btn" class="btn btn-restart">別の視点で見直す</button>
+                    </div>
                 </div>
             </div>
         </main>

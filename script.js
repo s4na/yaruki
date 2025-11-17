@@ -67,8 +67,8 @@ function showAction(node) {
     questionContainer.classList.add('hidden');
     resultContainer.classList.remove('hidden');
 
-    const actionTitle = document.querySelector('.result-box h2');
-    actionTitle.textContent = node.title;
+    const resultTitle = document.getElementById('result-title');
+    resultTitle.textContent = node.title;
     actionContent.innerHTML = node.content;
 
     // スクロール位置を上に

@@ -64,45 +64,57 @@ main {
 }
 
 /* Progress Bar */
+.progress-container {
+    margin-bottom: 35px;
+}
+
 .progress-bar {
     width: 100%;
-    height: 4px;
+    height: 6px;
     background-color: var(--color-border);
-    border-radius: 2px;
-    margin-bottom: 15px;
+    border-radius: 3px;
+    margin-bottom: 12px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 2px;
-    transition: width 0.3s ease;
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-text {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--color-text-light);
     text-align: center;
-    margin-bottom: 30px;
     font-weight: 500;
 }
 
 /* Question Section */
 .question-section {
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.4s ease;
 }
 
 .question-box {
     margin-bottom: 20px;
 }
 
+.question-counter {
+    font-size: 12px;
+    color: var(--color-text-light);
+    font-weight: 500;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .question-box h2 {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--color-text);
-    margin-bottom: 30px;
-    line-height: 1.5;
+    margin-bottom: 35px;
+    line-height: 1.6;
 }
 
 .button-group {
@@ -113,7 +125,7 @@ main {
 
 /* Buttons */
 .btn {
-    padding: 15px 30px;
+    padding: 18px 30px;
     font-size: 16px;
     font-weight: 600;
     border: none;
@@ -122,15 +134,32 @@ main {
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-label {
+    display: block;
+}
+
+.btn-sublabel {
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    opacity: 0.85;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
 }
 
 .btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
 }
 
 .btn-yes {
@@ -164,7 +193,7 @@ main {
 
 /* Result Section */
 .result-section {
-    animation: fadeIn 0.3s ease;
+    animation: slideUp 0.5s ease;
 }
 
 .result-section.hidden {
@@ -175,28 +204,59 @@ main {
     text-align: center;
 }
 
+.result-icon {
+    font-size: 56px;
+    margin-bottom: 15px;
+    display: inline-block;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .result-box h2 {
-    font-size: 24px;
+    font-size: 28px;
     color: var(--color-primary);
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     font-weight: 700;
 }
 
+.action-section {
+    margin-bottom: 30px;
+}
+
 .action-content {
-    background-color: var(--color-bg);
-    border-left: 4px solid var(--color-primary);
-    padding: 25px;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #f9fafb 100%);
+    border-left: 5px solid var(--color-primary);
+    padding: 28px;
+    border-radius: 12px;
     text-align: left;
-    margin-bottom: 20px;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.8;
     color: var(--color-text);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
 }
 
 .action-content strong {
     color: var(--color-primary);
-    font-weight: 600;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.action-content br {
+    margin: 8px 0;
+}
+
+.cta-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid var(--color-border);
+}
+
+.encouragement {
+    font-size: 15px;
+    color: var(--color-text-light);
+    margin-bottom: 18px;
+    font-weight: 500;
+    line-height: 1.6;
 }
 
 /* Footer */
@@ -213,11 +273,36 @@ footer {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
@@ -243,25 +328,52 @@ footer {
         padding: 30px 20px;
     }
 
+    .progress-bar {
+        height: 5px;
+    }
+
+    .progress-text {
+        font-size: 12px;
+    }
+
+    .question-counter {
+        font-size: 11px;
+    }
+
     .question-box h2 {
-        font-size: 18px;
+        font-size: 20px;
+        margin-bottom: 28px;
     }
 
     .btn {
-        padding: 12px 20px;
-        font-size: 14px;
+        padding: 15px 20px;
+        font-size: 15px;
+    }
+
+    .btn-sublabel {
+        font-size: 11px;
     }
 
     .button-group {
         gap: 10px;
     }
 
+    .result-icon {
+        font-size: 48px;
+    }
+
     .result-box h2 {
-        font-size: 20px;
+        font-size: 24px;
+        margin-bottom: 24px;
     }
 
     .action-content {
         padding: 20px;
         font-size: 15px;
+        border-left-width: 4px;
+    }
+
+    .encouragement {
+        font-size: 14px;
     }
 }
