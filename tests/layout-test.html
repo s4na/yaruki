@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レイアウト安定性テスト</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .test-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            max-height: 600px;
+            background: white;
+            border: 2px solid #4f46e5;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .test-panel h3 {
+            margin-top: 0;
+            color: #4f46e5;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            background: #f5f7fa;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .test-result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .measurement-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 11px;
+        }
+
+        .measurement-table th,
+        .measurement-table td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: right;
+        }
+
+        .measurement-table th {
+            background: #f5f7fa;
+            font-weight: bold;
+        }
+
+        .button-group {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .test-button {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .test-button:hover {
+            background: #4338ca;
+        }
+
+        .measurement-value {
+            font-weight: bold;
+            color: #4f46e5;
+        }
+
+        .variance-high {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .variance-low {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 行動ナビゲーション</h1>
+            <p class="tagline">Yes/No だけで「次の一歩」が見える</p>
+            <p class="subtitle">あなたの行動をブロックしている理由を一緒に見つけましょう</p>
+        </header>
+
+        <main id="app">
+            <div id="question-container" class="question-section">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <p id="progress-text" class="progress-text">質問 <span id="current-step">1</span>/7</p>
+                </div>
+
+                <div class="question-box">
+                    <div class="question-counter">質問に答えて、次の一歩を見つける</div>
+                    <h2 id="question-text"></h2>
+
+                    <div class="button-group">
+                        <button id="yes-btn" class="btn btn-yes">
+                            <span class="btn-label">Yes</span>
+                            <span class="btn-sublabel">そう思う</span>
+                        </button>
+                        <button id="no-btn" class="btn btn-no">
+                            <span class="btn-label">No</span>
+                            <span class="btn-sublabel">そうでもない</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-container" class="result-section hidden">
+                <div class="result-box">
+                    <div class="result-icon">💡</div>
+                    <h2 id="result-title">あなたの次の一歩</h2>
+
+                    <div class="action-section">
+                        <div id="action-content" class="action-content"></div>
+                    </div>
+
+                    <div class="cta-section">
+                        <p class="encouragement">このアドバイスを実行して、小さく始めてみませんか？</p>
+                        <button id="restart-btn" class="btn btn-restart">別の視点で見直す</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>シンプルな Yes/No だけで、行動のブロッカーを分析します</p>
+        </footer>
+    </div>
+
+    <!-- Test Panel -->
+    <div class="test-panel">
+        <h3>🧪 レイアウトテスト</h3>
+
+        <div class="button-group">
+            <button class="test-button" onclick="runLayoutTests()">テスト実行</button>
+            <button class="test-button" onclick="startMonitoring()">監視開始</button>
+            <button class="test-button" onclick="stopMonitoring()">監視停止</button>
+        </div>
+
+        <div id="test-results"></div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        /**
+         * 簡易版レイアウトテスト（ブラウザコンソール用）
+         */
+        class LayoutMonitor {
+            constructor() {
+                this.measurements = [];
+                this.monitoring = false;
+                this.monitorInterval = null;
+            }
+
+            measure() {
+                const questionBox = document.querySelector('.question-box');
+                const buttonGroup = document.querySelector('.button-group');
+
+                if (!questionBox || !buttonGroup) {
+                    return null;
+                }
+
+                const rect = buttonGroup.getBoundingClientRect();
+                const questionRect = questionBox.getBoundingClientRect();
+
+                return {
+                    timestamp: Date.now(),
+                    buttonGroupTop: Math.round(rect.top),
+                    buttonGroupHeight: Math.round(rect.height),
+                    questionBoxHeight: Math.round(questionRect.height),
+                    windowHeight: window.innerHeight,
+                };
+            }
+
+            record(questionId) {
+                const measurement = this.measure();
+                if (measurement) {
+                    measurement.questionId = questionId;
+                    this.measurements.push(measurement);
+                }
+            }
+
+            checkStability(tolerance = 5) {
+                if (this.measurements.length < 2) {
+                    return {
+                        isStable: true,
+                        variance: 0,
+                        message: 'テスト不足',
+                        measurements: this.measurements,
+                    };
+                }
+
+                const tops = this.measurements.map(m => m.buttonGroupTop);
+                const minTop = Math.min(...tops);
+                const maxTop = Math.max(...tops);
+                const variance = maxTop - minTop;
+                const isStable = variance <= tolerance;
+
+                return {
+                    isStable,
+                    variance,
+                    tolerance,
+                    minTop,
+                    maxTop,
+                    measurements: this.measurements,
+                    message: isStable
+                        ? `✓ 安定している（差: ${variance}px、許容値: ${tolerance}px）`
+                        : `✗ 不安定（差: ${variance}px > 許容値: ${tolerance}px）`,
+                };
+            }
+
+            checkHeightConsistency(tolerance = 2) {
+                if (this.measurements.length < 2) {
+                    return {
+                        isConsistent: true,
+                        heightVariance: 0,
+                        message: 'テスト不足',
+                    };
+                }
+
+                const heights = this.measurements.map(m => m.buttonGroupHeight);
+                const minHeight = Math.min(...heights);
+                const maxHeight = Math.max(...heights);
+                const heightVariance = maxHeight - minHeight;
+                const isConsistent = heightVariance <= tolerance;
+
+                return {
+                    isConsistent,
+                    heightVariance,
+                    tolerance,
+                    minHeight,
+                    maxHeight,
+                    message: isConsistent
+                        ? `✓ 高さが一定（差: ${heightVariance}px）`
+                        : `✗ 高さが変動（差: ${heightVariance}px）`,
+                };
+            }
+
+            clear() {
+                this.measurements = [];
+            }
+        }
+
+        const monitor = new LayoutMonitor();
+        let currentQuestionId = 'q1';
+
+        function recordMeasurement() {
+            monitor.record(currentQuestionId);
+        }
+
+        function startMonitoring() {
+            monitor.clear();
+            monitor.monitoring = true;
+            monitor.monitorInterval = setInterval(recordMeasurement, 100);
+            showResult('info', '監視開始しました（100ms間隔）');
+        }
+
+        function stopMonitoring() {
+            if (monitor.monitorInterval) {
+                clearInterval(monitor.monitorInterval);
+            }
+            monitor.monitoring = false;
+
+            const stability = monitor.checkStability();
+            const heightConsistency = monitor.checkHeightConsistency();
+
+            displayResults(stability, heightConsistency);
+        }
+
+        function runLayoutTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '';
+
+            // Test 1: DOM要素確認
+            showResult(
+                document.querySelector('.question-box') ? 'pass' : 'fail',
+                'DOM確認: .question-box'
+            );
+            showResult(
+                document.querySelector('.button-group') ? 'pass' : 'fail',
+                'DOM確認: .button-group'
+            );
+
+            // Test 2: CSS プロパティ確認
+            const questionBox = document.querySelector('.question-box');
+            const questionSection = document.querySelector('.question-section');
+            const buttonGroup = document.querySelector('.button-group');
+
+            const boxDisplay = window.getComputedStyle(questionBox).display;
+            const sectionDisplay = window.getComputedStyle(questionSection).display;
+            const groupShrink = window.getComputedStyle(buttonGroup).flexShrink;
+
+            showResult(
+                boxDisplay === 'flex' ? 'pass' : 'fail',
+                `CSS: .question-box は flex（実際: ${boxDisplay}）`
+            );
+
+            showResult(
+                sectionDisplay === 'flex' ? 'pass' : 'fail',
+                `CSS: .question-section は flex（実際: ${sectionDisplay}）`
+            );
+
+            showResult(
+                groupShrink === '0' ? 'pass' : 'fail',
+                `CSS: .button-group flex-shrink: 0（実際: ${groupShrink}）`
+            );
+
+            // Test 3: 現在のレイアウト測定
+            showResult('info', '現在のレイアウト測定:');
+            const measurement = monitor.measure();
+            if (measurement) {
+                showResult(
+                    'info',
+                    `ボタントップ位置: <span class="measurement-value">${measurement.buttonGroupTop}px</span>`
+                );
+                showResult(
+                    'info',
+                    `ボタン高さ: <span class="measurement-value">${measurement.buttonGroupHeight}px</span>`
+                );
+                showResult(
+                    'info',
+                    `質問ボックス高さ: <span class="measurement-value">${measurement.questionBoxHeight}px</span>`
+                );
+            }
+        }
+
+        function displayResults(stability, heightConsistency) {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '';
+
+            // ボタン位置の安定性
+            showResult(
+                stability.isStable ? 'pass' : 'fail',
+                `ボタン位置の安定性: ${stability.message}`
+            );
+
+            if (stability.measurements.length > 0) {
+                showResult(
+                    'info',
+                    `最小位置: ${stability.minTop}px / 最大位置: ${stability.maxTop}px`
+                );
+
+                // テーブル表示
+                let tableHtml = '<table class="measurement-table"><thead><tr><th>質問</th><th>Top</th><th>Height</th></tr></thead><tbody>';
+                stability.measurements.forEach(m => {
+                    tableHtml += `<tr><td>${m.questionId || 'N/A'}</td><td>${m.buttonGroupTop}</td><td>${m.buttonGroupHeight}</td></tr>`;
+                });
+                tableHtml += '</tbody></table>';
+                resultsDiv.innerHTML += tableHtml;
+            }
+
+            // ボタン高さの一貫性
+            showResult(
+                heightConsistency.isConsistent ? 'pass' : 'fail',
+                `ボタン高さの一貫性: ${heightConsistency.message}`
+            );
+
+            if (heightConsistency.minHeight !== undefined) {
+                showResult(
+                    'info',
+                    `最小高さ: ${heightConsistency.minHeight}px / 最大高さ: ${heightConsistency.maxHeight}px`
+                );
+            }
+        }
+
+        function showResult(type, message) {
+            const resultsDiv = document.getElementById('test-results');
+            const resultEl = document.createElement('div');
+            resultEl.className = `test-result ${type}`;
+            resultEl.innerHTML = message;
+            resultsDiv.appendChild(resultEl);
+        }
+
+        // ボタンクリック時にクエスチョンIDを更新
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+
+        if (yesBtn) {
+            const originalYesClick = yesBtn.onclick;
+            yesBtn.addEventListener('click', () => {
+                // 次のquestionIdを推測（簡易版）
+                const currentStep = parseInt(document.getElementById('current-step')?.textContent || '1');
+                currentQuestionId = `q${currentStep + 1}`;
+                recordMeasurement();
+            });
+        }
+
+        if (noBtn) {
+            const originalNoClick = noBtn.onclick;
+            noBtn.addEventListener('click', () => {
+                recordMeasurement();
+            });
+        }
+
+        console.log('レイアウトテストパネルが準備できました');
+        console.log('テスト実行ボタンをクリックするか、以下をコンソールで実行:');
+        console.log('  runLayoutTests()  - テスト実行');
+        console.log('  startMonitoring() - 監視開始');
+        console.log('  stopMonitoring()  - 監視停止');
+    </script>
+</body>
+</html>
