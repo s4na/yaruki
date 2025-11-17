@@ -1,0 +1,267 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-primary: #4f46e5;
+    --color-primary-dark: #4338ca;
+    --color-yes: #10b981;
+    --color-yes-dark: #059669;
+    --color-no: #ef4444;
+    --color-no-dark: #dc2626;
+    --color-restart: #6b7280;
+    --color-bg: #f9fafb;
+    --color-text: #1f2937;
+    --color-text-light: #6b7280;
+    --color-border: #e5e7eb;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px var(--color-shadow);
+    max-width: 600px;
+    width: 100%;
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+header p {
+    font-size: 16px;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+main {
+    padding: 40px 30px;
+    min-height: 400px;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--color-border);
+    border-radius: 2px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--color-text-light);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* Question Section */
+.question-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.question-box {
+    margin-bottom: 20px;
+}
+
+.question-box h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Buttons */
+.btn {
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-yes {
+    background-color: var(--color-yes);
+    color: white;
+}
+
+.btn-yes:hover {
+    background-color: var(--color-yes-dark);
+}
+
+.btn-no {
+    background-color: var(--color-no);
+    color: white;
+}
+
+.btn-no:hover {
+    background-color: var(--color-no-dark);
+}
+
+.btn-restart {
+    background-color: var(--color-restart);
+    color: white;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-restart:hover {
+    background-color: #4b5563;
+}
+
+/* Result Section */
+.result-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.result-section.hidden {
+    display: none;
+}
+
+.result-box {
+    text-align: center;
+}
+
+.result-box h2 {
+    font-size: 24px;
+    color: var(--color-primary);
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.action-content {
+    background-color: var(--color-bg);
+    border-left: 4px solid var(--color-primary);
+    padding: 25px;
+    border-radius: 8px;
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text);
+}
+
+.action-content strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Footer */
+footer {
+    background-color: var(--color-bg);
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+    font-size: 14px;
+    color: var(--color-text-light);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        border-radius: 12px;
+    }
+
+    header {
+        padding: 30px 20px;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    header p {
+        font-size: 14px;
+    }
+
+    main {
+        padding: 30px 20px;
+    }
+
+    .question-box h2 {
+        font-size: 18px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .button-group {
+        gap: 10px;
+    }
+
+    .result-box h2 {
+        font-size: 20px;
+    }
+
+    .action-content {
+        padding: 20px;
+        font-size: 15px;
+    }
+}

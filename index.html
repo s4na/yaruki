@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行動ナビゲーション - 次の一歩を見つける</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 行動ナビゲーション</h1>
+            <p>Yes/No だけで、次に取るべき一手が見える</p>
+        </header>
+
+        <main id="app">
+            <div id="question-container" class="question-section">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-text" class="progress-text">質問 1/8</p>
+
+                <div class="question-box">
+                    <h2 id="question-text"></h2>
+
+                    <div class="button-group">
+                        <button id="yes-btn" class="btn btn-yes">Yes</button>
+                        <button id="no-btn" class="btn btn-no">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-container" class="result-section hidden">
+                <div class="result-box">
+                    <h2>💡 あなたの次の一歩</h2>
+                    <div id="action-content" class="action-content"></div>
+                    <button id="restart-btn" class="btn btn-restart">最初から始める</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>シンプルな Yes/No だけで、行動のブロッカーを分析します</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
