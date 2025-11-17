@@ -2,23 +2,27 @@ let decisionTree = {};
 let currentQuestion = 'q1';
 let answerHistory = []; // 回答履歴を保存
 
+// LocalStorageから状態を復元
+function loadStateFromStorage() {
+    const savedQuestion = localStorage.getItem('yaruki-current-question');
+    const savedHistory = localStorage.getItem('yaruki-answer-history');
+
+    if (savedQuestion) {
+        currentQuestion = savedQuestion;
+    }
+
+    if (savedHistory) {
+        answerHistory = JSON.parse(savedHistory);
+    }
+}
+
 // DOM要素の取得
 const questionContainer = document.getElementById('question-container');
-const resultContainer = document.getElementById('result-container');
-const journeyContainer = document.getElementById('journey-container');
 const questionText = document.getElementById('question-text');
 const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
-const actionContent = document.getElementById('action-content');
-const journeyContent = document.getElementById('journey-content');
-
-// ボタン要素の取得
-const restartBtn = document.getElementById('restart-btn');
-const viewJourneyBtn = document.getElementById('view-journey-btn');
-const backToResultBtn = document.getElementById('back-to-result-btn');
-const restartFromJourneyBtn = document.getElementById('restart-from-journey-btn');
 
 // 決定木JSONを読み込む
 async function loadDecisionTree() {
@@ -71,6 +75,10 @@ function handleAnswer(answer, node) {
         answer: answer
     });
 
+    // LocalStorageに保存
+    localStorage.setItem('yaruki-answer-history', JSON.stringify(answerHistory));
+    localStorage.setItem('yaruki-current-question', nextId);
+
     if (nextId) {
         showQuestion(nextId);
     }
@@ -78,56 +86,19 @@ function handleAnswer(answer, node) {
 
 // アクション（結果）を表示
 function showAction(node) {
-    questionContainer.classList.add('hidden');
-    resultContainer.classList.remove('hidden');
-    journeyContainer.classList.add('hidden');
+    // 結果をLocalStorageに保存
+    localStorage.setItem('yaruki-result', JSON.stringify({
+        title: node.title,
+        content: node.content
+    }));
 
-    const resultTitle = document.getElementById('result-title');
-    resultTitle.textContent = node.title;
-    actionContent.innerHTML = node.content;
+    // 回答履歴をLocalStorageに保存
+    localStorage.setItem('yaruki-answer-history', JSON.stringify(answerHistory));
 
-    // スクロール位置を上に
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 結果ページにリダイレクト
+    window.location.href = 'result.html';
 }
 
-// 回答経路ページを表示
-function showJourneyPage() {
-    resultContainer.classList.add('hidden');
-    journeyContainer.classList.remove('hidden');
-    displayJourney();
-
-    // スクロール位置を上に
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// 結果ページに戻る
-function backToResult() {
-    journeyContainer.classList.add('hidden');
-    resultContainer.classList.remove('hidden');
-
-    // スクロール位置を上に
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// 回答履歴を表示
-function displayJourney() {
-    let journeyHTML = '<div class="journey-list">';
-
-    answerHistory.forEach((item, index) => {
-        const answerLabel = item.answer === 'yes' ? 'Yes' : 'No';
-        const answerClass = item.answer === 'yes' ? 'answer-yes' : 'answer-no';
-        journeyHTML += `
-            <div class="journey-item">
-                <div class="journey-step">${index + 1}</div>
-                <div class="journey-question">${item.question}</div>
-                <div class="journey-answer ${answerClass}">${answerLabel}</div>
-            </div>
-        `;
-    });
-
-    journeyHTML += '</div>';
-    journeyContent.innerHTML = journeyHTML;
-}
 
 // プログレスバーの更新
 function updateProgress(step) {
@@ -138,19 +109,23 @@ function updateProgress(step) {
     progressText.textContent = `質問 ${step}/${totalSteps}`;
 }
 
-// ボタンのイベントリスナー
-restartBtn.addEventListener('click', resetQuionnaire);
-restartFromJourneyBtn.addEventListener('click', resetQuionnaire);
-viewJourneyBtn.addEventListener('click', showJourneyPage);
-backToResultBtn.addEventListener('click', backToResult);
+// index.htmlのみでボタンのイベントリスナーを設定
+if (yesBtn && noBtn) {
+    // これらのイベントリスナーはshowQuestion内で設定されます
+}
 
 // クイズをリセット
 function resetQuionnaire() {
     answerHistory = [];
     currentQuestion = 'q1';
-    showQuestion('q1');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    localStorage.removeItem('yaruki-result');
+    localStorage.removeItem('yaruki-answer-history');
+    localStorage.removeItem('yaruki-current-question');
+    window.location.href = 'index.html';
 }
 
-// 初期化
-loadDecisionTree();
+// 初期化（index.htmlでのみ実行）
+if (questionContainer) {
+    loadStateFromStorage();
+    loadDecisionTree();
+}
