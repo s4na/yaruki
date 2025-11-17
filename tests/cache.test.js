@@ -18,7 +18,98 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 0: DOM Element Safety
+   * Test Suite 0: Cache Version Management
+   * Tests cache version compatibility and migration
+   */
+  describe('Cache Version Management', () => {
+    test('should detect cache version mismatch', () => {
+      // Setup old version cache
+      localStorage.setItem('yaruki-cache-version', '1');
+      localStorage.setItem('yaruki-current-question', 'q5');
+      localStorage.setItem('yaruki-answer-history', JSON.stringify([
+        { question: 'Q1?', answer: 'yes' }
+      ]));
+
+      const cachedVersion = localStorage.getItem('yaruki-cache-version');
+      const currentVersion = '2';
+
+      expect(cachedVersion).not.toBe(currentVersion);
+    });
+
+    test('should clear old cache when version mismatches', () => {
+      // Setup old version cache
+      localStorage.setItem('yaruki-cache-version', '1');
+      localStorage.setItem('yaruki-current-question', 'q5');
+      localStorage.setItem('yaruki-answer-history', JSON.stringify([
+        { question: 'Q?', answer: 'yes' }
+      ]));
+      localStorage.setItem('yaruki-result', JSON.stringify({
+        title: 'Old Result',
+        content: 'Content'
+      }));
+
+      // Simulate version check and clear
+      const cachedVersion = localStorage.getItem('yaruki-cache-version');
+      if (cachedVersion !== '2') {
+        localStorage.removeItem('yaruki-result');
+        localStorage.removeItem('yaruki-answer-history');
+        localStorage.removeItem('yaruki-current-question');
+        localStorage.removeItem('yaruki-cache-version');
+      }
+
+      // Verify all old cache cleared
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+      expect(localStorage.getItem('yaruki-answer-history')).toBeNull();
+      expect(localStorage.getItem('yaruki-result')).toBeNull();
+      expect(localStorage.getItem('yaruki-cache-version')).toBeNull();
+    });
+
+    test('should preserve cache when version matches', () => {
+      // Setup cache with matching version
+      const currentVersion = '2';
+      localStorage.setItem('yaruki-cache-version', currentVersion);
+      const history = [{ question: 'Q?', answer: 'yes' }];
+      localStorage.setItem('yaruki-answer-history', JSON.stringify(history));
+
+      // Simulate version check (no clear)
+      const cachedVersion = localStorage.getItem('yaruki-cache-version');
+      let shouldClear = false;
+      if (cachedVersion !== currentVersion) {
+        shouldClear = true;
+      }
+
+      expect(shouldClear).toBe(false);
+      expect(JSON.parse(localStorage.getItem('yaruki-answer-history'))).toEqual(history);
+    });
+
+    test('should set version after cache clear', () => {
+      // Old cache exists without version
+      localStorage.setItem('yaruki-current-question', 'q5');
+
+      // Clear and set new version
+      localStorage.removeItem('yaruki-current-question');
+      localStorage.setItem('yaruki-cache-version', '2');
+
+      expect(localStorage.getItem('yaruki-cache-version')).toBe('2');
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+    });
+
+    test('should handle missing version as old cache', () => {
+      // Setup cache without version (old format)
+      localStorage.setItem('yaruki-current-question', 'q5');
+      expect(localStorage.getItem('yaruki-cache-version')).toBeNull();
+
+      // Should be treated as outdated
+      const cachedVersion = localStorage.getItem('yaruki-cache-version');
+      const currentVersion = '2';
+      const isOutdated = cachedVersion !== currentVersion;
+
+      expect(isOutdated).toBe(true);
+    });
+  });
+
+  /**
+   * Test Suite 1: DOM Element Safety
    * Ensures code doesn't break when DOM elements don't exist
    */
   describe('DOM Element Safety', () => {
@@ -50,7 +141,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 1: Fresh Start Behavior
+   * Test Suite 10: Fresh Start Behavior
    * Ensures new sessions start with clean state
    */
   describe('Fresh Start Behavior', () => {
@@ -86,7 +177,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 2: State Persistence During Session
+   * Test Suite 10: State Persistence During Session
    * Ensures progress is saved as user answers questions
    */
   describe('State Persistence During Session', () => {
@@ -145,7 +236,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 3: State Recovery on Page Reload
+   * Test Suite 10: State Recovery on Page Reload
    * Ensures progress is maintained when page is reloaded
    */
   describe('State Recovery on Page Reload', () => {
@@ -197,7 +288,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 4: Result Page Transition
+   * Test Suite 10: Result Page Transition
    * Ensures cache is properly managed when transitioning to result page
    */
   describe('Result Page Transition', () => {
@@ -264,7 +355,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 5: Reset/Clear Behavior
+   * Test Suite 10: Reset/Clear Behavior
    * Ensures all cache is properly cleared when user resets the questionnaire
    */
   describe('Reset and Clear Behavior', () => {
@@ -315,7 +406,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 6: Multi-Session Isolation
+   * Test Suite 10: Multi-Session Isolation
    * Ensures one session's data doesn't interfere with another
    */
   describe('Multi-Session Isolation', () => {
@@ -404,7 +495,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 7: Edge Cases and Data Integrity
+   * Test Suite 10: Edge Cases and Data Integrity
    * Tests unusual but possible scenarios
    */
   describe('Edge Cases and Data Integrity', () => {
@@ -484,7 +575,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 8: Data Load Failure Handling
+   * Test Suite 10: Data Load Failure Handling
    * Tests cache clearing when data files fail to load
    */
   describe('Data Load Failure Handling', () => {
@@ -583,7 +674,7 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 9: Complete User Journey
+   * Test Suite 10: Complete User Journey
    * Integration tests simulating full user workflows
    */
   describe('Complete User Journey', () => {

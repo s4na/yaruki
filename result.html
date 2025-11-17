@@ -96,11 +96,20 @@
             }
         }
 
+        // キャッシュバージョン
+        const CACHE_VERSION = '2';
+
         // キャッシュをすべてクリア
-        function clearAllCache() {
+        function clearAllYarukiCache() {
             localStorage.removeItem('yaruki-result');
             localStorage.removeItem('yaruki-answer-history');
             localStorage.removeItem('yaruki-current-question');
+            localStorage.removeItem('yaruki-cache-version');
+        }
+
+        // 互換性のためのエイリアス
+        function clearAllCache() {
+            clearAllYarukiCache();
         }
     </script>
 </body>
