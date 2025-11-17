@@ -1,0 +1,28 @@
+{
+  "name": "yaruki-behavior-navigation",
+  "version": "1.0.0",
+  "description": "Action navigation decision tree - finds your next step with Yes/No questions",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s4na/yaruki.git"
+  },
+  "keywords": [
+    "decision-tree",
+    "behavior",
+    "psychology",
+    "navigation",
+    "ux"
+  ],
+  "author": "s4na",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
