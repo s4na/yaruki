@@ -2,8 +2,21 @@ let decisionTree = {};
 let currentQuestion = 'q1';
 let answerHistory = []; // 回答履歴を保存
 
+// キャッシュバージョン（スクリプト更新時は + 1）
+const CACHE_VERSION = '2';
+
 // LocalStorageから状態を復元
 function loadStateFromStorage() {
+    // キャッシュバージョンをチェック
+    const cachedVersion = localStorage.getItem('yaruki-cache-version');
+    if (cachedVersion !== CACHE_VERSION) {
+        // バージョンが異なる場合は古いキャッシュをクリア
+        console.warn(`キャッシュバージョン不一致: ${cachedVersion} -> ${CACHE_VERSION}`);
+        clearAllYarukiCache();
+        localStorage.setItem('yaruki-cache-version', CACHE_VERSION);
+        return;
+    }
+
     const savedQuestion = localStorage.getItem('yaruki-current-question');
     const savedHistory = localStorage.getItem('yaruki-answer-history');
 
@@ -31,6 +44,16 @@ function loadStateFromStorage() {
             answerHistory = [];
         }
     }
+}
+
+// 全てのyarukiキャッシュをクリア
+function clearAllYarukiCache() {
+    localStorage.removeItem('yaruki-result');
+    localStorage.removeItem('yaruki-answer-history');
+    localStorage.removeItem('yaruki-current-question');
+    localStorage.removeItem('yaruki-cache-version');
+    currentQuestion = 'q1';
+    answerHistory = [];
 }
 
 // DOM要素の取得
@@ -73,11 +96,7 @@ async function loadDecisionTree() {
 
 // 決定木読み込み失敗時のキャッシュクリア
 function clearDecisionTreeCache() {
-    localStorage.removeItem('yaruki-result');
-    localStorage.removeItem('yaruki-answer-history');
-    localStorage.removeItem('yaruki-current-question');
-    currentQuestion = 'q1';
-    answerHistory = [];
+    clearAllYarukiCache();
 }
 
 // 質問を表示
@@ -169,14 +188,8 @@ if (yesBtn && noBtn) {
 
 // クイズをリセット
 function resetQuionnaire() {
-    // 状態をリセット
-    answerHistory = [];
-    currentQuestion = 'q1';
-
     // キャッシュをすべてクリア
-    localStorage.removeItem('yaruki-result');
-    localStorage.removeItem('yaruki-answer-history');
-    localStorage.removeItem('yaruki-current-question');
+    clearAllYarukiCache();
 
     // index.htmlにリダイレクト
     window.location.href = 'index.html';
