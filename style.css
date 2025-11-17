@@ -94,10 +94,21 @@ main {
 /* Question Section */
 .question-section {
     animation: fadeIn 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 300px);
 }
 
 .question-box {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Question content wrapper */
+.question-box > *:not(.button-group) {
+    flex-shrink: 0;
 }
 
 .question-counter {
@@ -113,7 +124,7 @@ main {
     font-size: 22px;
     font-weight: 700;
     color: var(--color-text);
-    margin-bottom: 35px;
+    margin-bottom: auto;  /* Push buttons to bottom */
     line-height: 1.6;
 }
 
@@ -121,6 +132,8 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
+    flex-shrink: 0;  /* Don't shrink */
+    margin-top: 35px;  /* Space above buttons */
 }
 
 /* Buttons */
