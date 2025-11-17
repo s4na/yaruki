@@ -45,12 +45,35 @@ const progressText = document.getElementById('progress-text');
 async function loadDecisionTree() {
     try {
         const response = await fetch('decision-tree.json');
+
+        // HTTPエラーをチェック
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+
         decisionTree = await response.json();
+
+        // JSONが正しい形式かバリデーション
+        if (!decisionTree || typeof decisionTree !== 'object') {
+            throw new Error('Invalid decision tree format');
+        }
+
         showQuestion(currentQuestion);
     } catch (error) {
         console.error('Failed to load decision tree:', error);
-        questionText.textContent = 'エラー: データの読み込みに失敗しました';
+        // データ読み込み失敗時はキャッシュをクリアして新規開始
+        clearDecisionTreeCache();
+        questionText.textContent = 'エラー: データの読み込みに失敗しました。キャッシュをクリアして再度お試しください。';
     }
+}
+
+// 決定木読み込み失敗時のキャッシュクリア
+function clearDecisionTreeCache() {
+    localStorage.removeItem('yaruki-result');
+    localStorage.removeItem('yaruki-answer-history');
+    localStorage.removeItem('yaruki-current-question');
+    currentQuestion = 'q1';
+    answerHistory = [];
 }
 
 // 質問を表示

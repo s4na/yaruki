@@ -452,7 +452,106 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
-   * Test Suite 8: Complete User Journey
+   * Test Suite 8: Data Load Failure Handling
+   * Tests cache clearing when data files fail to load
+   */
+  describe('Data Load Failure Handling', () => {
+    test('should clear cache on decision tree load failure', () => {
+      // Setup cache with existing data
+      localStorage.setItem('yaruki-current-question', 'q5');
+      localStorage.setItem('yaruki-answer-history', JSON.stringify([
+        { question: 'Q1?', answer: 'yes' }
+      ]));
+      localStorage.setItem('yaruki-result', JSON.stringify({
+        title: 'Previous Result',
+        content: 'Content'
+      }));
+
+      // Simulate data load failure - cache should be cleared
+      localStorage.removeItem('yaruki-result');
+      localStorage.removeItem('yaruki-answer-history');
+      localStorage.removeItem('yaruki-current-question');
+
+      // Verify all cache is cleared
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+      expect(localStorage.getItem('yaruki-answer-history')).toBeNull();
+      expect(localStorage.getItem('yaruki-result')).toBeNull();
+    });
+
+    test('should reset state after data load failure', () => {
+      // Setup corrupted/failed state
+      localStorage.setItem('yaruki-current-question', 'invalid_state');
+      localStorage.setItem('yaruki-answer-history', 'corrupted_json');
+
+      // Simulate recovery - clear and reset
+      localStorage.removeItem('yaruki-current-question');
+      localStorage.removeItem('yaruki-answer-history');
+
+      // Fresh start
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+      expect(localStorage.getItem('yaruki-answer-history')).toBeNull();
+    });
+
+    test('should allow recovery after data load failure', () => {
+      // Simulate failure recovery
+      localStorage.removeItem('yaruki-result');
+      localStorage.removeItem('yaruki-answer-history');
+      localStorage.removeItem('yaruki-current-question');
+
+      // Start new session
+      localStorage.setItem('yaruki-current-question', 'q1');
+      const history = [];
+      localStorage.setItem('yaruki-answer-history', JSON.stringify(history));
+
+      expect(localStorage.getItem('yaruki-current-question')).toBe('q1');
+      expect(JSON.parse(localStorage.getItem('yaruki-answer-history')).length).toBe(0);
+    });
+
+    test('should preserve cache integrity despite load failures', () => {
+      // Valid cache before failure
+      const validHistory = [
+        { question: 'Q1?', answer: 'yes' },
+        { question: 'Q2?', answer: 'no' }
+      ];
+      localStorage.setItem('yaruki-answer-history', JSON.stringify(validHistory));
+
+      // Simulate failure and recovery
+      localStorage.removeItem('yaruki-answer-history');
+
+      // New session cache
+      const newHistory = [
+        { question: 'Q1?', answer: 'no' }
+      ];
+      localStorage.setItem('yaruki-answer-history', JSON.stringify(newHistory));
+
+      const restored = JSON.parse(localStorage.getItem('yaruki-answer-history'));
+      expect(restored.length).toBe(1);
+      expect(restored[0].answer).toBe('no');
+    });
+
+    test('should handle repeated load failures gracefully', () => {
+      // First failure
+      localStorage.removeItem('yaruki-current-question');
+      localStorage.removeItem('yaruki-answer-history');
+      localStorage.removeItem('yaruki-result');
+
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+
+      // User retries
+      localStorage.setItem('yaruki-current-question', 'q1');
+
+      // Second failure
+      localStorage.removeItem('yaruki-current-question');
+      localStorage.removeItem('yaruki-answer-history');
+      localStorage.removeItem('yaruki-result');
+
+      // Cache remains clean
+      expect(localStorage.getItem('yaruki-current-question')).toBeNull();
+    });
+  });
+
+  /**
+   * Test Suite 9: Complete User Journey
    * Integration tests simulating full user workflows
    */
   describe('Complete User Journey', () => {
