@@ -1,5 +1,6 @@
 let decisionTree = {};
 let currentQuestion = 'q1';
+let answerHistory = []; // 回答履歴を保存
 
 // DOM要素の取得
 const questionContainer = document.getElementById('question-container');
@@ -11,6 +12,7 @@ const restartBtn = document.getElementById('restart-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const actionContent = document.getElementById('action-content');
+const journeyContent = document.getElementById('journey-content');
 
 // 決定木JSONを読み込む
 async function loadDecisionTree() {
@@ -57,6 +59,12 @@ function showQuestion(questionId) {
 function handleAnswer(answer, node) {
     const nextId = answer === 'yes' ? node.yes : node.no;
 
+    // 回答履歴に追加
+    answerHistory.push({
+        question: node.text,
+        answer: answer
+    });
+
     if (nextId) {
         showQuestion(nextId);
     }
@@ -71,8 +79,31 @@ function showAction(node) {
     resultTitle.textContent = node.title;
     actionContent.innerHTML = node.content;
 
+    // 回答履歴を表示
+    displayJourney();
+
     // スクロール位置を上に
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 回答履歴を表示
+function displayJourney() {
+    let journeyHTML = '<div class="journey-list">';
+
+    answerHistory.forEach((item, index) => {
+        const answerLabel = item.answer === 'yes' ? 'Yes' : 'No';
+        const answerClass = item.answer === 'yes' ? 'answer-yes' : 'answer-no';
+        journeyHTML += `
+            <div class="journey-item">
+                <div class="journey-step">${index + 1}</div>
+                <div class="journey-question">${item.question}</div>
+                <div class="journey-answer ${answerClass}">${answerLabel}</div>
+            </div>
+        `;
+    });
+
+    journeyHTML += '</div>';
+    journeyContent.innerHTML = journeyHTML;
 }
 
 // プログレスバーの更新
@@ -86,6 +117,7 @@ function updateProgress(step) {
 
 // 最初から始める
 restartBtn.addEventListener('click', () => {
+    answerHistory = []; // 回答履歴をリセット
     currentQuestion = 'q1';
     showQuestion('q1');
     window.scrollTo({ top: 0, behavior: 'smooth' });
