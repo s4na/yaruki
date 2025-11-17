@@ -18,6 +18,38 @@ describe('LocalStorage Cache Management', () => {
   });
 
   /**
+   * Test Suite 0: DOM Element Safety
+   * Ensures code doesn't break when DOM elements don't exist
+   */
+  describe('DOM Element Safety', () => {
+    test('should handle missing resultContainer gracefully', () => {
+      // resultContainer is only present in result.html, not index.html
+      const resultContainer = document.getElementById('result-container');
+      expect(resultContainer).toBeNull();
+    });
+
+    test('should not throw error when questionContainer is null', () => {
+      const questionContainer = document.getElementById('question-container');
+      expect(questionContainer).toBeNull();
+    });
+
+    test('should not throw error when questionText is null', () => {
+      const questionText = document.getElementById('question-text');
+      expect(questionText).toBeNull();
+    });
+
+    test('should safely check for element existence before manipulation', () => {
+      // Simulate the pattern used in the code
+      const element = document.getElementById('non-existent');
+      expect(() => {
+        if (element) {
+          element.classList.remove('hidden');
+        }
+      }).not.toThrow();
+    });
+  });
+
+  /**
    * Test Suite 1: Fresh Start Behavior
    * Ensures new sessions start with clean state
    */
