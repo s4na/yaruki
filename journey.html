@@ -80,15 +80,20 @@
             journeyContent.innerHTML = journeyHTML;
         }
 
+        // キャッシュをすべてクリア
+        function clearAllCache() {
+            localStorage.removeItem('yaruki-result');
+            localStorage.removeItem('yaruki-answer-history');
+            localStorage.removeItem('yaruki-current-question');
+        }
+
         // ボタンのイベントリスナー
         document.getElementById('back-to-result-btn').addEventListener('click', () => {
             window.location.href = 'result.html';
         });
 
         document.getElementById('restart-from-journey-btn').addEventListener('click', () => {
-            localStorage.removeItem('yaruki-result');
-            localStorage.removeItem('yaruki-answer-history');
-            localStorage.removeItem('yaruki-current-question');
+            clearAllCache();
             window.location.href = 'index.html';
         });
     </script>
