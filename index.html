@@ -49,14 +49,27 @@
                         <div id="action-content" class="action-content"></div>
                     </div>
 
-                    <div class="journey-section">
-                        <h3>あなたの回答経路</h3>
+                    <div class="result-actions">
+                        <button id="view-journey-btn" class="btn btn-view-journey">あなたの回答経路を見る</button>
+                        <button id="restart-btn" class="btn btn-restart">別の視点で見直す</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="journey-container" class="journey-section-page hidden">
+                <div class="journey-box">
+                    <div class="journey-header">
+                        <h2>あなたの回答経路</h2>
+                        <p class="journey-subtitle">どのような判断で、この結果に辿り着きましたか</p>
+                    </div>
+
+                    <div class="journey-content-wrapper">
                         <div id="journey-content" class="journey-content"></div>
                     </div>
 
-                    <div class="cta-section">
-                        <p class="encouragement">このアドバイスを実行して、小さく始めてみませんか？</p>
-                        <button id="restart-btn" class="btn btn-restart">別の視点で見直す</button>
+                    <div class="journey-actions">
+                        <button id="back-to-result-btn" class="btn btn-back">結果に戻る</button>
+                        <button id="restart-from-journey-btn" class="btn btn-restart">別の視点で見直す</button>
                     </div>
                 </div>
             </div>
