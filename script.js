@@ -40,6 +40,8 @@ const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
+// resultContainerはresult.htmlにのみ存在するため、nullチェック付きで取得
+const resultContainer = document.getElementById('result-container');
 
 // 決定木JSONを読み込む
 async function loadDecisionTree() {
@@ -63,7 +65,9 @@ async function loadDecisionTree() {
         console.error('Failed to load decision tree:', error);
         // データ読み込み失敗時はキャッシュをクリアして新規開始
         clearDecisionTreeCache();
-        questionText.textContent = 'エラー: データの読み込みに失敗しました。キャッシュをクリアして再度お試しください。';
+        if (questionText) {
+            questionText.textContent = 'エラー: データの読み込みに失敗しました。キャッシュをクリアして再度お試しください。';
+        }
     }
 }
 
@@ -90,18 +94,27 @@ function showQuestion(questionId) {
         showAction(node);
     } else {
         // 質問の表示
-        questionContainer.classList.remove('hidden');
-        resultContainer.classList.add('hidden');
+        if (questionContainer) {
+            questionContainer.classList.remove('hidden');
+        }
+        // resultContainerはresult.htmlにのみ存在する
+        if (resultContainer) {
+            resultContainer.classList.add('hidden');
+        }
 
-        questionText.textContent = node.text;
+        if (questionText) {
+            questionText.textContent = node.text;
+        }
         currentQuestion = questionId;
 
         // プログレスバーの更新
         updateProgress(node.step);
 
         // ボタンのイベントリスナー
-        yesBtn.onclick = () => handleAnswer('yes', node);
-        noBtn.onclick = () => handleAnswer('no', node);
+        if (yesBtn && noBtn) {
+            yesBtn.onclick = () => handleAnswer('yes', node);
+            noBtn.onclick = () => handleAnswer('no', node);
+        }
     }
 }
 
