@@ -90,12 +90,17 @@
 
             if (restartBtn) {
                 restartBtn.addEventListener('click', () => {
-                    localStorage.removeItem('yaruki-result');
-                    localStorage.removeItem('yaruki-answer-history');
-                    localStorage.removeItem('yaruki-current-question');
+                    clearAllCache();
                     window.location.href = 'index.html';
                 });
             }
+        }
+
+        // キャッシュをすべてクリア
+        function clearAllCache() {
+            localStorage.removeItem('yaruki-result');
+            localStorage.removeItem('yaruki-answer-history');
+            localStorage.removeItem('yaruki-current-question');
         }
     </script>
 </body>

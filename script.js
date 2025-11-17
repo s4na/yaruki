@@ -7,12 +7,29 @@ function loadStateFromStorage() {
     const savedQuestion = localStorage.getItem('yaruki-current-question');
     const savedHistory = localStorage.getItem('yaruki-answer-history');
 
+    // 結果ページから戻された場合、キャッシュをリセット
+    const savedResult = localStorage.getItem('yaruki-result');
+    if (savedResult && !savedQuestion) {
+        // 結果ページが存在するのにcurrentQuestionがない = 不整合
+        // キャッシュをクリアして新規開始
+        localStorage.removeItem('yaruki-result');
+        localStorage.removeItem('yaruki-answer-history');
+        currentQuestion = 'q1';
+        answerHistory = [];
+        return;
+    }
+
     if (savedQuestion) {
         currentQuestion = savedQuestion;
     }
 
     if (savedHistory) {
-        answerHistory = JSON.parse(savedHistory);
+        try {
+            answerHistory = JSON.parse(savedHistory);
+        } catch (error) {
+            console.error('Failed to parse answer history:', error);
+            answerHistory = [];
+        }
     }
 }
 
@@ -116,11 +133,16 @@ if (yesBtn && noBtn) {
 
 // クイズをリセット
 function resetQuionnaire() {
+    // 状態をリセット
     answerHistory = [];
     currentQuestion = 'q1';
+
+    // キャッシュをすべてクリア
     localStorage.removeItem('yaruki-result');
     localStorage.removeItem('yaruki-answer-history');
     localStorage.removeItem('yaruki-current-question');
+
+    // index.htmlにリダイレクト
     window.location.href = 'index.html';
 }
 
