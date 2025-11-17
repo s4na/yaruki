@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>結果 - 行動ナビゲーション - 次の一歩を見つける</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 行動ナビゲーション</h1>
+            <p class="tagline">Yes/No だけで「次の一歩」が見える</p>
+            <p class="subtitle">あなたの行動をブロックしている理由を一緒に見つけましょう</p>
+        </header>
+
+        <main id="app">
+            <div id="result-container" class="result-section">
+                <div class="result-box">
+                    <div class="result-icon">💡</div>
+                    <h2 id="result-title">あなたの次の一歩</h2>
+
+                    <div class="action-section">
+                        <div id="action-content" class="action-content"></div>
+                    </div>
+
+                    <div class="result-actions">
+                        <button id="view-journey-btn" class="btn btn-view-journey">あなたの回答経路を見る</button>
+                        <button id="restart-btn" class="btn btn-restart">別の視点で見直す</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>シンプルな Yes/No だけで、行動のブロッカーを分析します</p>
+        </footer>
+    </div>
+
+    <script>
+        // result.htmlのスクリプトが実行される時点で、結果を表示
+        window.addEventListener('DOMContentLoaded', () => {
+            const resultFromStorage = localStorage.getItem('yaruki-result');
+            const answerHistoryFromStorage = localStorage.getItem('yaruki-answer-history');
+
+            if (!resultFromStorage) {
+                // 結果がない場合は質問ページにリダイレクト
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const result = JSON.parse(resultFromStorage);
+                const answerHistory = JSON.parse(answerHistoryFromStorage || '[]');
+
+                // グローバル変数に設定（スクリプト内で使用）
+                window.yarukiResult = result;
+                window.answerHistory = answerHistory;
+
+                // 結果を表示
+                displayResult(result);
+
+                // ボタンのイベントリスナーを設定
+                setupResultButtons();
+            } catch (error) {
+                console.error('Failed to load result:', error);
+                window.location.href = 'index.html';
+            }
+        });
+
+        // 結果を表示する関数
+        function displayResult(result) {
+            const resultTitle = document.getElementById('result-title');
+            const actionContent = document.getElementById('action-content');
+
+            resultTitle.textContent = result.title;
+            actionContent.innerHTML = result.content;
+        }
+
+        // ボタンのイベントリスナーをセットアップ
+        function setupResultButtons() {
+            const viewJourneyBtn = document.getElementById('view-journey-btn');
+            const restartBtn = document.getElementById('restart-btn');
+
+            if (viewJourneyBtn) {
+                viewJourneyBtn.addEventListener('click', () => {
+                    window.location.href = 'journey.html';
+                });
+            }
+
+            if (restartBtn) {
+                restartBtn.addEventListener('click', () => {
+                    localStorage.removeItem('yaruki-result');
+                    localStorage.removeItem('yaruki-answer-history');
+                    localStorage.removeItem('yaruki-current-question');
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

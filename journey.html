@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回答経路 - 行動ナビゲーション - 次の一歩を見つける</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 行動ナビゲーション</h1>
+            <p class="tagline">Yes/No だけで「次の一歩」が見える</p>
+            <p class="subtitle">あなたの行動をブロックしている理由を一緒に見つけましょう</p>
+        </header>
+
+        <main id="app">
+            <div id="journey-container" class="journey-section-page">
+                <div class="journey-box">
+                    <div class="journey-header">
+                        <h2>あなたの回答経路</h2>
+                        <p class="journey-subtitle">どのような判断で、この結果に辿り着きましたか</p>
+                    </div>
+
+                    <div class="journey-content-wrapper">
+                        <div id="journey-content" class="journey-content"></div>
+                    </div>
+
+                    <div class="journey-actions">
+                        <button id="back-to-result-btn" class="btn btn-back">結果に戻る</button>
+                        <button id="restart-from-journey-btn" class="btn btn-restart">別の視点で見直す</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>シンプルな Yes/No だけで、行動のブロッカーを分析します</p>
+        </footer>
+    </div>
+
+    <script>
+        // journey.htmlのスクリプトが実行される時点で、回答経路を表示
+        window.addEventListener('DOMContentLoaded', () => {
+            const answerHistoryFromStorage = localStorage.getItem('yaruki-answer-history');
+
+            if (!answerHistoryFromStorage) {
+                // 回答履歴がない場合は質問ページにリダイレクト
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const answerHistory = JSON.parse(answerHistoryFromStorage);
+                displayJourney(answerHistory);
+            } catch (error) {
+                console.error('Failed to load journey:', error);
+                window.location.href = 'index.html';
+            }
+        });
+
+        // 回答経路を表示
+        function displayJourney(answerHistory) {
+            let journeyHTML = '<div class="journey-list">';
+
+            answerHistory.forEach((item, index) => {
+                const answerLabel = item.answer === 'yes' ? 'Yes' : 'No';
+                const answerClass = item.answer === 'yes' ? 'answer-yes' : 'answer-no';
+                journeyHTML += `
+                    <div class="journey-item">
+                        <div class="journey-step">${index + 1}</div>
+                        <div class="journey-question">${item.question}</div>
+                        <div class="journey-answer ${answerClass}">${answerLabel}</div>
+                    </div>
+                `;
+            });
+
+            journeyHTML += '</div>';
+            const journeyContent = document.getElementById('journey-content');
+            journeyContent.innerHTML = journeyHTML;
+        }
+
+        // ボタンのイベントリスナー
+        document.getElementById('back-to-result-btn').addEventListener('click', () => {
+            window.location.href = 'result.html';
+        });
+
+        document.getElementById('restart-from-journey-btn').addEventListener('click', () => {
+            localStorage.removeItem('yaruki-result');
+            localStorage.removeItem('yaruki-answer-history');
+            localStorage.removeItem('yaruki-current-question');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
