@@ -61,6 +61,7 @@ const questionContainer = document.getElementById('question-container');
 const questionText = document.getElementById('question-text');
 const yesBtn = document.getElementById('yes-btn');
 const noBtn = document.getElementById('no-btn');
+const backBtn = document.getElementById('back-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 // resultContainerはresult.htmlにのみ存在するため、nullチェック付きで取得
@@ -129,6 +130,16 @@ function showQuestion(questionId) {
         // プログレスバーの更新
         updateProgress(node.step);
 
+        // 戻るボタンの表示制御（q1では非表示、それ以外は表示）
+        if (backBtn) {
+            if (answerHistory.length === 0) {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.style.display = 'block';
+                backBtn.onclick = () => goToPreviousQuestion();
+            }
+        }
+
         // ボタンのイベントリスナー
         if (yesBtn && noBtn) {
             yesBtn.onclick = () => handleAnswer('yes', node);
@@ -154,6 +165,42 @@ function handleAnswer(answer, node) {
     if (nextId) {
         showQuestion(nextId);
     }
+}
+
+// 前の質問に戻る
+function goToPreviousQuestion() {
+    if (answerHistory.length === 0) {
+        return; // 回答履歴がない場合は何もしない
+    }
+
+    // 最後の回答を削除
+    answerHistory.pop();
+
+    // 前の質問を特定
+    let previousQuestionId = 'q1';
+    let previousNode = decisionTree['q1'];
+
+    // 回答履歴から前の質問のIDを再現
+    if (answerHistory.length > 0) {
+        previousQuestionId = 'q1';
+        previousNode = decisionTree['q1'];
+
+        for (let i = 0; i < answerHistory.length; i++) {
+            const answer = answerHistory[i].answer;
+            const nextId = answer === 'yes' ? previousNode.yes : previousNode.no;
+            previousQuestionId = nextId;
+            previousNode = decisionTree[nextId];
+        }
+    }
+
+    currentQuestion = previousQuestionId;
+
+    // LocalStorageに保存
+    localStorage.setItem('yaruki-answer-history', JSON.stringify(answerHistory));
+    localStorage.setItem('yaruki-current-question', previousQuestionId);
+
+    // 前の質問を表示
+    showQuestion(previousQuestionId);
 }
 
 // アクション（結果）を表示
